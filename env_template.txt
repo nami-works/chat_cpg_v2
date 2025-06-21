@@ -1,0 +1,13 @@
+# OpenAI API Configuration
+OPENAI_API_KEY=your_openai_api_key_here
+
+# Development Settings
+MAX_ITERATIONS=10
+LOG_LEVEL=INFO
+
+# GitHub Settings (for local development)
+GITHUB_TOKEN=your_github_token_here
+
+# Project Settings
+PROJECT_NAME=ChatCPG v2
+PROJECT_VERSION=2.0.0 

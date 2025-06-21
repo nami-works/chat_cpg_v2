@@ -1,0 +1,265 @@
+name: AI Continuous Development
+
+on:
+  schedule:
+    # Run every hour during business hours (9 AM - 6 PM UTC)
+    - cron: '0 9-18 * * 1-5'
+  workflow_dispatch:
+    inputs:
+      force_run:
+        description: 'Force run development cycle'
+        required: false
+        default: 'false'
+        type: boolean
+      max_iterations:
+        description: 'Maximum iterations to run'
+        required: false
+        default: '5'
+        type: string
+
+env:
+  OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+  PYTHON_VERSION: '3.11'
+
+jobs:
+  ai-development:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        cache: 'pip'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install openai python-dotenv requests
+        
+        # Install additional dependencies if requirements exist
+        if [ -f automation/requirements.txt ]; then
+          pip install -r automation/requirements.txt
+        fi
+    
+    - name: Configure Git
+      run: |
+        git config --local user.email "ai-developer@chatcpg.com"
+        git config --local user.name "AI Developer Bot"
+    
+    - name: Check for pending tasks
+      id: check_tasks
+      run: |
+        python -c "
+        import json
+        with open('development_plan.json', 'r') as f:
+            plan = json.load(f)
+        
+        pending_tasks = 0
+        for phase in plan['phases']:
+            for task in phase['tasks']:
+                if task.get('status', 'pending') == 'pending':
+                    pending_tasks += 1
+        
+        print(f'PENDING_TASKS={pending_tasks}')
+        print(f'::set-output name=pending_tasks::{pending_tasks}')
+        "
+    
+    - name: Run AI Development
+      if: steps.check_tasks.outputs.pending_tasks > 0 || github.event.inputs.force_run == 'true'
+      run: |
+        cd automation
+        python ai_developer.py
+      env:
+        MAX_ITERATIONS: ${{ github.event.inputs.max_iterations || '5' }}
+    
+    - name: Generate Development Report
+      if: always()
+      run: |
+        python -c "
+        import json
+        from datetime import datetime
+        
+        # Load development plan
+        with open('development_plan.json', 'r') as f:
+            plan = json.load(f)
+        
+        # Generate report
+        total_tasks = 0
+        completed_tasks = 0
+        pending_tasks = 0
+        failed_tasks = 0
+        
+        for phase in plan['phases']:
+            for task in phase['tasks']:
+                total_tasks += 1
+                status = task.get('status', 'pending')
+                if status == 'completed':
+                    completed_tasks += 1
+                elif status == 'pending':
+                    pending_tasks += 1
+                elif status == 'failed':
+                    failed_tasks += 1
+        
+        completion_percentage = (completed_tasks / total_tasks * 100) if total_tasks > 0 else 0
+        
+        # Create report
+        report = f'''# ChatCPG v2 Development Report
+        
+        **Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S UTC')}
+        
+        ## Progress Summary
+        - **Total Tasks:** {total_tasks}
+        - **Completed:** {completed_tasks}
+        - **Pending:** {pending_tasks}
+        - **Failed:** {failed_tasks}
+        - **Completion:** {completion_percentage:.1f}%
+        
+        ## Phase Progress
+        '''
+        
+        for phase in plan['phases']:
+            phase_total = len(phase['tasks'])
+            phase_completed = sum(1 for task in phase['tasks'] if task.get('status') == 'completed')
+            phase_percentage = (phase_completed / phase_total * 100) if phase_total > 0 else 0
+            
+            report += f'''
+        ### {phase['name']}
+        - Progress: {phase_completed}/{phase_total} ({phase_percentage:.1f}%)
+        - Duration: {phase['estimated_duration']}
+        '''
+        
+        # Save report
+        with open('DEVELOPMENT_REPORT.md', 'w') as f:
+            f.write(report)
+        
+        print('Development report generated')
+        "
+    
+    - name: Commit and push changes
+      if: always()
+      run: |
+        git add .
+        
+        # Check if there are changes to commit
+        if git diff --staged --quiet; then
+          echo "No changes to commit"
+        else
+          git commit -m "AI Development: Automated progress update [$(date +'%Y-%m-%d %H:%M')]"
+          git push origin main
+          echo "Changes committed and pushed"
+        fi
+    
+    - name: Create Issue for Failed Tasks
+      if: failure()
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          
+          // Read development plan
+          const plan = JSON.parse(fs.readFileSync('development_plan.json', 'utf8'));
+          
+          // Find failed tasks
+          const failedTasks = [];
+          for (const phase of plan.phases) {
+            for (const task of phase.tasks) {
+              if (task.status === 'failed') {
+                failedTasks.push({
+                  phase: phase.name,
+                  task: task.name,
+                  id: task.id,
+                  description: task.description
+                });
+              }
+            }
+          }
+          
+          if (failedTasks.length > 0) {
+            const issueBody = `# AI Development Failures
+            
+            The following tasks failed during automated development:
+            
+            ${failedTasks.map(task => `
+            ## ${task.task} (${task.id})
+            - **Phase:** ${task.phase}
+            - **Description:** ${task.description}
+            `).join('\n')}
+            
+            Please review the logs and address these issues.
+            
+            **Workflow Run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            `;
+            
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `AI Development Failures - ${new Date().toISOString().split('T')[0]}`,
+              body: issueBody,
+              labels: ['ai-development', 'bug', 'automated']
+            });
+          }
+    
+    - name: Upload logs
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: ai-development-logs
+        path: automation/logs/
+        retention-days: 30
+
+  status-check:
+    runs-on: ubuntu-latest
+    needs: ai-development
+    if: always()
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Update README with status
+      run: |
+        python -c "
+        import json
+        from datetime import datetime
+        
+        # Load development plan
+        with open('development_plan.json', 'r') as f:
+            plan = json.load(f)
+        
+        # Calculate progress
+        total_tasks = 0
+        completed_tasks = 0
+        
+        for phase in plan['phases']:
+            for task in phase['tasks']:
+                total_tasks += 1
+                if task.get('status') == 'completed':
+                    completed_tasks += 1
+        
+        completion_percentage = (completed_tasks / total_tasks * 100) if total_tasks > 0 else 0
+        
+        # Create or update status badge info
+        status_info = f'''
+        <!-- AI Development Status -->
+        ![Development Progress](https://img.shields.io/badge/Progress-{completion_percentage:.0f}%25-{'green' if completion_percentage > 80 else 'yellow' if completion_percentage > 50 else 'red'})
+        ![Tasks Completed](https://img.shields.io/badge/Tasks-{completed_tasks}/{total_tasks}-blue)
+        ![Last Updated](https://img.shields.io/badge/Updated-{datetime.now().strftime('%Y---%m---%d')}-lightgrey)
+        '''
+        
+        print('Status badges updated')
+        print(status_info)
+        "
+    
+    - name: Send notification
+      if: needs.ai-development.result == 'success'
+      run: |
+        echo "AI Development cycle completed successfully"
+        # Add webhook/notification logic here if needed 

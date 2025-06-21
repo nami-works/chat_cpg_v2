@@ -1,0 +1,90 @@
+{
+  "project": "ChatCPG v2 - AI-Powered Business Solution Platform",
+  "version": "2.0.0",
+  "description": "Advanced platform combining AI chat, knowledge management, and automated solution development",
+  "phases": [
+    {
+      "id": "phase-1-foundation",
+      "name": "Foundation & Authentication",
+      "priority": 1,
+      "estimated_duration": "2 weeks",
+      "tasks": [
+        {
+          "id": "task-001",
+          "name": "Setup FastAPI Backend Structure",
+          "description": "Create the foundational FastAPI application with proper project structure, configuration management, and basic health endpoints",
+          "files": [
+            "backend/app/__init__.py",
+            "backend/app/main.py",
+            "backend/app/config.py",
+            "backend/requirements.txt"
+          ],
+          "requirements": [
+            "FastAPI application with CORS middleware",
+            "Environment configuration using Pydantic Settings",
+            "Health check and status endpoints",
+            "Proper logging configuration"
+          ],
+          "expected_output": "Working FastAPI server on port 8000 with health endpoints",
+          "dependencies": [],
+          "priority": "high",
+          "status": "pending"
+        },
+        {
+          "id": "task-002",
+          "name": "Authentication System",
+          "description": "Implement JWT-based authentication with email/password and Google OAuth integration",
+          "files": [
+            "backend/app/auth/__init__.py",
+            "backend/app/auth/routes.py",
+            "backend/app/auth/models.py",
+            "backend/app/auth/jwt_handler.py"
+          ],
+          "requirements": [
+            "User registration and login endpoints",
+            "JWT token generation and validation",
+            "Google OAuth 2.0 integration",
+            "Password hashing with bcrypt"
+          ],
+          "expected_output": "Complete authentication system with Google OAuth",
+          "dependencies": ["task-001"],
+          "priority": "high",
+          "status": "pending"
+        }
+      ]
+    },
+    {
+      "id": "phase-2-payments",
+      "name": "Payment & Subscription System",
+      "priority": 2,
+      "estimated_duration": "1 week",
+      "tasks": [
+        {
+          "id": "task-003",
+          "name": "Stripe Integration",
+          "description": "Implement Stripe payment processing with subscription management",
+          "files": [
+            "backend/app/payments/__init__.py",
+            "backend/app/payments/stripe_handler.py",
+            "backend/app/payments/routes.py"
+          ],
+          "requirements": [
+            "Stripe checkout session creation",
+            "Subscription management",
+            "Webhook handling for payment events"
+          ],
+          "expected_output": "Complete Stripe integration with subscription management",
+          "dependencies": ["task-002"],
+          "priority": "high",
+          "status": "pending"
+        }
+      ]
+    }
+  ],
+  "current_task": "task-001",
+  "ai_settings": {
+    "model": "gpt-4",
+    "temperature": 0.3,
+    "max_tokens": 4000
+  }
+} 
