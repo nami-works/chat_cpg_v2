@@ -68,7 +68,7 @@ git push -u origin main
 ### 3. Configure GitHub Secrets
 In your GitHub repository settings, add:
 - `OPENAI_API_KEY`: Your OpenAI API key
-- `GITHUB_TOKEN`: GitHub personal access token (for automated commits)
+- `AI_GITHUB_TOKEN`: GitHub personal access token (for automated commits)
 
 ### 4. Enable GitHub Actions
 - Go to the "Actions" tab in your repository

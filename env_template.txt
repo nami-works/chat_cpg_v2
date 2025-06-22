@@ -6,7 +6,7 @@ MAX_ITERATIONS=10
 LOG_LEVEL=INFO
 
 # GitHub Settings (for local development)
-GITHUB_TOKEN=your_github_token_here
+AI_GITHUB_TOKEN=your_github_token_here
 
 # Project Settings
 PROJECT_NAME=ChatCPG v2

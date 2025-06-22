@@ -126,7 +126,7 @@ The project follows a structured development approach with 6 main phases:
 
 1. **Add Repository Secrets**
    - `OPENAI_API_KEY`: Your OpenAI API key
-   - `GITHUB_TOKEN`: GitHub personal access token
+   - `AI_GITHUB_TOKEN`: GitHub personal access token
 
 2. **Enable GitHub Actions**
    - The workflow runs automatically every hour (9 AM - 6 PM UTC, Mon-Fri)
