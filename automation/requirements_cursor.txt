@@ -1,0 +1,5 @@
+# Cursor AI Developer Requirements
+# No OpenAI dependency - uses your existing Cursor AI subscription
+
+python-dotenv>=1.0.0
+requests>=2.31.0 
