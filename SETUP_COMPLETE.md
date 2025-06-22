@@ -58,11 +58,9 @@ OPENAI_API_KEY=your_openai_api_key_here
 
 ### 2. Push to GitHub
 ```bash
-# Create GitHub repository
-# Push your code
-git remote add origin https://github.com/yourusername/chatcpg_v2.git
-git branch -M main
-git push -u origin main
+# Repository already created and code pushed!
+# Your repository: https://github.com/nami-works/chatcpg_v2
+git remote -v  # Verify remote is set correctly
 ```
 
 ### 3. Configure GitHub Secrets

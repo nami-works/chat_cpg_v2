@@ -101,7 +101,7 @@ The project follows a structured development approach with 6 main phases:
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/nami-works/chatcpg_v2.git
    cd chatcpg_v2
    ```
 
