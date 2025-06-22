@@ -75,8 +75,7 @@ jobs:
     - name: Run AI Development
       if: steps.check_tasks.outputs.pending_tasks > 0 || github.event.inputs.force_run == 'true'
       run: |
-        cd automation
-        python ai_developer.py
+        python automation/ai_developer.py
       env:
         MAX_ITERATIONS: ${{ github.event.inputs.max_iterations || '5' }}
     
