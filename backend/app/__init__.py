@@ -1,3 +1,3 @@
 """
-This file is used to initialize the FastAPI application and its components.
+ChatCPG v2 - AI-Powered Business Solution Platform
 """

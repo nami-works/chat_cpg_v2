@@ -28,8 +28,8 @@
           "expected_output": "Working FastAPI server on port 8000 with health endpoints",
           "dependencies": [],
           "priority": "high",
-          "status": "needs_revision",
-          "completed_at": "2025-06-23T11:04:03.077827"
+          "status": "failed",
+          "completed_at": "2025-06-23T11:51:31.144018"
         },
         {
           "id": "task-002",
