@@ -1,1 +1,3 @@
-# This file is left intentionally blank. It's presence indicates to Python that this directory should be treated as a package.
+"""
+This file is used to initialize the FastAPI application and its components.
+"""

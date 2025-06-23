@@ -1,11 +1,18 @@
+"""
+This file is used to create the FastAPI application and to define the application routes.
+"""
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from .config import settings
+from .config import Settings
 import logging
 
-app = FastAPI(title=settings.app_name)
+# Load settings
+settings = Settings()
 
-# CORS Middleware settings
+# Create FastAPI instance
+app = FastAPI(title=settings.APP_NAME)
+
+# Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -15,7 +22,7 @@ app.add_middleware(
 )
 
 # Configure logging
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=settings.LOGGING_LEVEL)
 logger = logging.getLogger(__name__)
 
 @app.get("/health")
@@ -23,14 +30,14 @@ async def health_check():
     """
     Health check endpoint
     """
-    return {"status": "UP"}
+    return {"status": "healthy"}
 
 @app.get("/status")
-async def status_check():
+async def status():
     """
-    Status check endpoint
+    Status endpoint
     """
-    return {"status": "OK"}
+    return {"status": "running"}
 
 @app.exception_handler(HTTPException)
 async def http_exception_handler(request, exc):
@@ -38,8 +45,8 @@ async def http_exception_handler(request, exc):
     HTTP exception handler
     """
     logger.error(f"Error occurred: {exc.detail}")
-    return {"error": f"HTTPException: {exc.detail}"}
+    return {"error": exc.detail}
 
-To run the server, navigate to the backend directory and run the following command:
+To run the application, navigate to the backend directory and run the following command:
 uvicorn app.main:app --reload
 This will start the FastAPI server on port 8000. You can access the health and status endpoints at `http://localhost:8000/health` and `http://localhost:8000/status` respectively.
