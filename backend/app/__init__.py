@@ -1,3 +1,4 @@
 """
-ChatCPG v2 - AI-Powered Business Solution Platform
+This is the initialization file for our FastAPI application.
+It doesn't require any content for now.
 """

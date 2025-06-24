@@ -1,7 +1,12 @@
-from fastapi import FastAPI
+"""
+This is the main entry point for our FastAPI application.
+"""
+
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from .config import settings
 
+# Initialize FastAPI application
 app = FastAPI(title=settings.app_name)
 
 # Add CORS middleware
@@ -16,19 +21,26 @@ app.add_middleware(
 @app.get("/health")
 async def health_check():
     """
-    Health check endpoint. Returns status of the application.
+    Health check endpoint
     """
     return {"status": "ok"}
 
 @app.get("/status")
 async def status():
     """
-    Status endpoint. Returns detailed status of the application.
+    Status endpoint
     """
-    return {"status": "ok", "environment": settings.dict()}
+    return {"status": "running", "app_name": settings.app_name}
 
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+@app.exception_handler(HTTPException)
+async def http_exception_handler(request, exc):
+    """
+    HTTP exception handler
+    """
+    return {"error": str(exc.detail)}
 
-This code sets up a basic FastAPI application with CORS middleware and two endpoints for health checks and status checks. The application settings are loaded from environment variables using Pydantic's BaseSettings class. The application runs on port 8000.
+To run the server, navigate to the `backend` directory and run the following command:
+
+uvicorn app.main:app --reload
+
+This will start the FastAPI server on `http://localhost:8000`. The `/health` and `/status` endpoints can be accessed to check the health and status of the application respectively.
