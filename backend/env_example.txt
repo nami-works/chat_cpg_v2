@@ -1,0 +1,46 @@
+# API Settings
+SECRET_KEY=your-super-secret-key-change-this-in-production
+SERVER_NAME=localhost
+SERVER_HOST=http://localhost:8000
+
+# Database Settings
+POSTGRES_SERVER=localhost
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=your-postgres-password
+POSTGRES_DB=chat_cpg_v2
+POSTGRES_PORT=5432
+
+# Redis Settings
+REDIS_URL=redis://localhost:6379
+
+# Email Settings (optional)
+SMTP_TLS=true
+SMTP_PORT=587
+SMTP_HOST=smtp.gmail.com
+SMTP_USER=your-email@gmail.com
+SMTP_PASSWORD=your-app-password
+EMAILS_FROM_EMAIL=your-email@gmail.com
+EMAILS_FROM_NAME=ChatCPG v2
+
+# Google OAuth Settings
+GOOGLE_CLIENT_ID=your-google-client-id
+GOOGLE_CLIENT_SECRET=your-google-client-secret
+GOOGLE_REDIRECT_URI=http://localhost:3000/auth/callback
+
+# Stripe Settings
+STRIPE_PUBLISHABLE_KEY=pk_test_your-stripe-publishable-key
+STRIPE_SECRET_KEY=sk_test_your-stripe-secret-key
+STRIPE_WEBHOOK_SECRET=whsec_your-webhook-secret
+
+# AI API Keys
+OPENAI_API_KEY=your-openai-api-key
+GROQ_API_KEY=your-groq-api-key
+CURSOR_API_KEY=your-cursor-api-key
+CURSOR_API_URL=https://api.cursor.com/v1
+
+# Pinecone Settings
+PINECONE_API_KEY=your-pinecone-api-key
+PINECONE_ENVIRONMENT=your-pinecone-environment
+PINECONE_INDEX_NAME=chat-cpg-knowledge
+
+PINECONE_INDEX_NAME=chat-cpg-knowledge 

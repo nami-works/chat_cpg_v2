@@ -1,0 +1,40 @@
+# Docker Compose MVP Override
+# Use this for simplified MVP testing: docker-compose -f docker-compose.yml -f docker-compose.mvp.yml up
+
+services:
+  # Backend with MVP configuration
+  backend:
+    environment:
+      # MVP: Simplified environment with only essential variables
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres123@postgres:5432/chat_cpg_v2
+      - REDIS_URL=redis://redis:6379
+      - SECRET_KEY=mvp-super-secret-key-for-development-only
+      - ACCESS_TOKEN_EXPIRE_MINUTES=1440
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-not-set}
+      - GROQ_API_KEY=${GROQ_API_KEY:-not-set}
+      # MVP: These are not needed but kept to avoid errors
+      - CURSOR_API_KEY=not-needed-for-mvp
+      - GOOGLE_CLIENT_ID=not-needed-for-mvp
+      - GOOGLE_CLIENT_SECRET=not-needed-for-mvp
+      - STRIPE_SECRET_KEY=not-needed-for-mvp
+      - STRIPE_PUBLISHABLE_KEY=not-needed-for-mvp
+      - PINECONE_API_KEY=not-needed-for-mvp
+      - PINECONE_ENVIRONMENT=not-needed-for-mvp
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  # Frontend with MVP API URL
+  frontend:
+    environment:
+      - REACT_APP_API_URL=http://localhost:8000
+      - REACT_APP_MODE=mvp
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s 
