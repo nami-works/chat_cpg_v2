@@ -50,7 +50,7 @@ async def init_db():
         logger.info("Initializing database...")
         
         # Import all models to ensure they're registered with Base
-        from ..models import user, brand
+        from ..models import user, brand, chat, subscription, content, knowledge
         
         async with engine.begin() as conn:
             # Create all tables

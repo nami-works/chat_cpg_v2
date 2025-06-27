@@ -6,14 +6,13 @@ from fastapi.responses import JSONResponse
 import uvicorn
 import logging
 
-# Enable minimal imports for MVP functionality
+# Enable full Phase 2 functionality
 from .api.chat import router as chat_router
 from .api.auth import router as auth_router
 from .api.brands import router as brands_router
-# Other imports temporarily disabled for MVP
-# from .api.subscription import router as subscription_router
-# from .api.knowledge import router as knowledge_router
-# from .api.content import router as content_router
+from .api.subscription import router as subscription_router
+from .api.knowledge import router as knowledge_router
+from .api.content import router as content_router
 from .core.config import settings
 from .db.database import init_db, close_db
 
@@ -24,26 +23,26 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """
-    Application lifespan manager - MVP with database.
+    Application lifespan manager - Full Phase 2 functionality.
     """
     # Startup
-    print("Starting up ChatCPG v2 MVP...")
+    print("Starting up ChatCPG v2 with Phase 2 features...")
     await init_db()
-    print("Database initialized.")
+    print("Database initialized with all Phase 2 models.")
     
     yield
     
     # Shutdown
-    print("Shutting down ChatCPG v2 MVP...")
+    print("Shutting down ChatCPG v2...")
     await close_db()
     print("Database connections closed.")
 
 
 # Create FastAPI application
 app = FastAPI(
-    title="ChatCPG v2 MVP",
-    description="MVP: AI-powered chat system with authentication and brand support for GE Beauty",
-    version="2.0.0-mvp",
+    title="ChatCPG v2",
+    description="Advanced AI-powered CPG business assistant with subscription management and knowledge base",
+    version="2.0.0",
     docs_url="/docs",
     redoc_url="/redoc",
     lifespan=lifespan,
@@ -76,17 +75,16 @@ async def health_check():
     """
     Health check endpoint.
     """
-    return {"status": "healthy", "environment": "mvp"}
+    return {"status": "healthy", "environment": "production"}
 
 
-# Enable essential routers for MVP functionality
+# Enable all Phase 2 routers
 app.include_router(auth_router, prefix="/api/v1/auth", tags=["authentication"])
 app.include_router(chat_router, prefix="/api/v1", tags=["chat"])
 app.include_router(brands_router, prefix="/api/v1", tags=["brands"])
-# Other routers temporarily disabled for MVP
-# app.include_router(subscription_router, prefix="/api/v1/subscription", tags=["Subscription"])
-# app.include_router(knowledge_router, prefix="/api/v1/knowledge", tags=["Knowledge Base"])
-# app.include_router(content_router, prefix="/api/v1/content", tags=["content"])
+app.include_router(subscription_router, prefix="/api/v1/subscription", tags=["subscription"])
+app.include_router(knowledge_router, prefix="/api/v1/knowledge", tags=["knowledge"])
+app.include_router(content_router, prefix="/api/v1/content", tags=["content"])
 
 
 # Root endpoint
@@ -96,13 +94,17 @@ async def root():
     Root endpoint with API information.
     """
     return {
-        "message": "ChatCPG v2 MVP",
-        "version": "2.0.0-mvp",
+        "message": "ChatCPG v2 - Phase 2 Complete",
+        "version": "2.0.0",
         "status": "running",
         "features": [
             "Authentication (Login/Signup)",
             "AI chat with brand context", 
-            "GE Beauty brand support"
+            "Subscription management with Stripe",
+            "Usage tracking and limits",
+            "Knowledge base with file uploads",
+            "Content creation tools",
+            "Multi-brand support"
         ]
     }
 
