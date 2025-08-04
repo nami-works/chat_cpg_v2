@@ -1,15 +1,13 @@
-"""
-FastAPI application with CORS middleware, health check, and status endpoints
-"""
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
-from fastapi import HTTPException
+from typing import Optional
 from .config import settings
+import logging
 
-app = FastAPI(title=settings.app_name, version=settings.api_version)
+# Initialize FastAPI application
+app = FastAPI(title=settings.app_name)
 
-# Add CORS middleware
+# Setup CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -17,6 +15,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Setup logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 @app.get("/health")
 async def health_check():
@@ -26,33 +28,20 @@ async def health_check():
     return {"status": "ok"}
 
 @app.get("/status")
-async def status():
+async def status_check():
     """
-    Status endpoint
+    Status check endpoint
     """
     return {"status": "running"}
 
 @app.exception_handler(HTTPException)
 async def http_exception_handler(request, exc):
     """
-    HTTP exception handler
+    Exception handler for HTTP exceptions
     """
-    return JSONResponse(
-        status_code=exc.status_code,
-        content={"message": str(exc.detail)},
-    )
+    logger.error(f"Error occurred: {exc.detail}")
+    return {"error": f"An error occurred: {exc.detail}"}
 
-@app.exception_handler(Exception)
-async def exception_handler(request, exc):
-    """
-    Global exception handler
-    """
-    return JSONResponse(
-        status_code=500,
-        content={"message": str(exc)},
-    )
-
-To run the server, navigate to the backend directory and run the command:
+To run the server, navigate to the backend directory and run the following command:
 uvicorn app.main:app --reload
-
-This will start the FastAPI server on `http://localhost:8000`. You can check the health and status of the server by navigating to `http://localhost:8000/health` and `http://localhost:8000/status` respectively.
+This will start the FastAPI server on port 8000. You can access the health and status endpoints at http://localhost:8000/health and http://localhost:8000/status respectively.
