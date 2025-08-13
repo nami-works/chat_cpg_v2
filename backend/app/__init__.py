@@ -1,1 +1,1 @@
-# This file is intentionally left blank to make Python treat the directory as a package
+# This file is left intentionally blank to indicate to Python that this directory should be treated as a package.
